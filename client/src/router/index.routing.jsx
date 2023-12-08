@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import PublicRoutes from './PublicRoutes'
 import PrivateRoutes from './PrivateRoutes'
-import { LoginPage,SignUpPage,HomePage,FacultadesPage,ProgramasPage,DashboardPage,ProgramasForm } from "../pages";
+import { LoginPage,SignUpPage,HomePage,FacultadesPage,ProgramasPage,DashboardPage,ProgramasForm,FacultadesForm} from "../pages";
 
 
 export const router = createBrowserRouter([
@@ -37,6 +37,12 @@ export const router = createBrowserRouter([
             {
                 path: 'facultades',
                 element: <FacultadesPage />,
+            }, {
+                path: 'facultad/:id',
+                element: <FacultadesForm />,
+            }, {
+                path: 'facultades/add',
+                element: <FacultadesForm />,
             },
             {
                 path: '*',

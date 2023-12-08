@@ -15,7 +15,7 @@ const FacultadCard = ({
         }
     }
     const updateBtn = ()=>{
-        navigate(`/facultad/${facultad.facultad_id}`)
+        navigate(`/dashboard/facultad/${facultad.facultad_id}`)
         console.log("update");
     }
     return (

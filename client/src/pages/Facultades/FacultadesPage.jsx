@@ -18,7 +18,7 @@ const FacultadesPage = () => {
             console.log('Obteniendo facultades...')
             const res= await getAllFacultades()
             console.log('get api:',res)
-            setFacultades(res.data)
+            setFacultades(res)
         }
         loadFacultades()
     }, [])
@@ -39,8 +39,9 @@ const FacultadesPage = () => {
                     )
                 }
             </div>
-            <div className="mt-5">
-                <button className="py-2 px-4 text-xl uppercase mx-1 rounded-md bg-slate-500 text-white font-bold hover:bg-slate-600" onClick={()=>navigate('/dashboard/facultades/add')}>Crear</button>
+            <div className="mt-5 flex justify-between">
+                <button className="py-2 px-4 text-xl uppercase mx-1 rounded-md bg-slate-500 text-white font-bold hover:bg-slate-600" onClick={() => navigate('/dashboard/facultades/add')}>Crear</button>
+                <button className="py-2 px-4 text-xl mx-1 rounded-md bg-red-400 text-white font-bold hover:bg-red-600" onClick={() => navigate('/dashboard')}>Regresar al dashboard</button>
             </div>
         </section>
     )

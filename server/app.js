@@ -2,6 +2,8 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import authRoutes from "./routes/auth.routes.js";
 import programasRoutes from './routes/programas.routes.js';
+import facultadesRoutes from './routes/facultades.routes.js';
+import reportesRoutes from './routes/reportes.routes.js';
 import cors from 'cors';
 import morgan from "morgan";
 
@@ -22,5 +24,7 @@ app.use(express.urlencoded({ extended: false }));
 // Import routes from routes folder
 app.use("/api", authRoutes);
 app.use('/api/programas', programasRoutes);
+app.use('/api/facultades', facultadesRoutes);
+app.use('/api/reportes', reportesRoutes);
 
 export default app;

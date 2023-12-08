@@ -37,8 +37,6 @@ export const signup = async (req, res) => {
             id: newUser.rows[0]._id,
             username: newUser.rows[0].username,
             email: newUser.rows[0].email,
-            createdAt: newUser.rows[0].createdAt,
-            updatedAt: newUser.rows[0].updatedAt,
         });
     }
     catch (error) {
@@ -69,7 +67,7 @@ export const signin = async (req, res) => {
 
         // Crear el token
         const accessToken = await createAccessToken({
-            id: user.rows[0].id,
+            id: user.rows[0].usuario_id,
             username: user.rows[0].username,
         });
 
@@ -98,16 +96,25 @@ export const signout = async (req, res) => {
 
 export const profile = async (req, res) => {
     try {
+        // token viene en el header
+        const user_id = req.user.id;
+        // verify si el usuario existe
+        const userExist = await pool.query(
+            "SELECT * FROM vw_usuario_login WHERE usuario_id = $1",
+            [user_id]
+        );
+        if (userExist.rows.length === 0)
+            return res.status(400).json({ message: "User does not exist" });
+
         const user = await pool.query(
-            "SELECT * FROM users WHERE _id = $1",
-            [req.userId]
+            "SELECT * FROM users WHERE usuario_id = $1",
+            [user_id]
         );
         res.status(200).json({
-            id: user.rows[0]._id,
+            id: user.rows[0].usuario_id,
             username: user.rows[0].username,
             email: user.rows[0].email,
-            createdAt: user.rows[0].createdAt,
-            updatedAt: user.rows[0].updatedAt,
+            rol: user.rows[0].rol,
         });
     } catch (error) {
         console.log(error);

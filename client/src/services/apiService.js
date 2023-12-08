@@ -5,7 +5,7 @@ const apiService = axios.create({
 });
 
 export const authUser = async (dates) => {
-    const { data } = await apiService.post("/login", dates, {
+    const { data } = await apiService.post("/signin", dates, {
         headers: {
         "Content-Type": "application/json",
         },
@@ -25,12 +25,22 @@ export const registerUser = async (dates) => {
 export const checkUser = async (token) => {
     const { data } = await apiService.get("/profile", {
         headers: {
-        "Content-Type": "application/json",
-        Authorization: token,
+            "Content-Type": "application/json",
+            Authorization: token,
         },
     });
     return data;
 };
+
+export const getUsuario = async (id) => {
+    const { data } = await apiService.get(`/usuarios/get/${id}`);
+    return data;
+}
+export const logoutUser = async () => {
+    const { data } = await apiService.post("/logout");
+    return data;
+}
+
 
 
 export const getPrograma = async (id) => {
@@ -54,5 +64,29 @@ export const getAllProgramas = async () => {
     return data;
 };
 
-export const deleteFacultad = async (token) => { };
-export const getAllFacultades = async (token) => { };
+export const getFacultad = async (id) => {
+    const { data } = await apiService.get(`/facultades/get/${id}`);
+    return data;
+};
+export const createFacultad = async (data) => {
+    const { data: response } = await apiService.post("/facultades/create", data);
+    return response;
+};
+export const updateFacultad = async (id,data) => {
+    const { data: response } = await apiService.put(`/facultades/update/${id}`, data);
+    return response;
+};
+export const deleteFacultad = async (id) => {
+    const { data } = await apiService.delete(`/facultades/delete/${id}`);
+    return data;
+};
+export const getAllFacultades = async () => {
+    const { data } = await apiService.get("/facultades/all");
+    return data;
+};
+
+
+export const getViewReport = async () => { 
+    const { data } = await apiService.get("/reportes/view");
+    return data;
+}

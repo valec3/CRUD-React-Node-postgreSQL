@@ -1,20 +1,23 @@
 /* eslint-disable react/prop-types */
 import { createContext, useState } from "react"
 import { authUser, checkUser, registerUser } from "../services/apiService"
+import Cookies from 'js-cookie';
 
 export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
 
-    const [auth, setAuth] = useState(true)
+    const [auth, setAuth] = useState(false)
     const [error, setError] = useState('')
     const [dataUser, setDataUser] = useState()
 
     const login = async (user) => {
         try {
             const data = await authUser(user)
-            if (data.token) {
+            // console.log("data de respuesta: ",data)
+            if (data.email) {
                 setAuth(true);
-                localStorage.setItem('token', data.token)
+                localStorage.setItem('access-token', data.token)
+                Cookies.set('access-token', data.token, { expires: 7 });
                 setDataUser(data)
             } else {
                 setError('Inicio Invalido')
@@ -28,6 +31,8 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async (token) => {
         if (token) {
             try {
+                console.log("check auth")
+                // console.log("token a revisar",token)
                 const data = await checkUser(token)
                 if (data.username) {
                     setAuth(true)
@@ -54,7 +59,7 @@ export const AuthProvider = ({ children }) => {
             const data = await registerUser(user)
             if (data.token) {
                 setAuth(true);
-                localStorage.setItem('token', data.token)
+                localStorage.setItem('access-token', data.token)
                 setDataUser(data)
             } else {
                 setError('Registro Invalido')

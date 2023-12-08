@@ -89,7 +89,7 @@ INSERT INTO `programas` (`programa_id`, `facultad_id`, `nombre`, `cod_programa`,
 	(42, 7, 'CIENCIAS POLÍTICAS Y GOBERNANZA', 'OFICIO Nº 0288-2020-D-PD-EPG-UNA', 2);
 
 
-INSERT INTO `dicfacultades` (`Id`, `Nombre`, `Abrev`, `IdArea`) VALUES
+INSERT INTO facultad (facultad_id, nombre, abreviatura, id_area) VALUES
 	(1, 'CIENCIAS AGRARIAS', 'FCA', 1),
 	(2, 'MEDICINA VETERINARIA Y ZOOTECNIA', 'FMVZ', 2),
 	(3, 'INGENIERÍA ECONÓMICA', 'FIE', 3),

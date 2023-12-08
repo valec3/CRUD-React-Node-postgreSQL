@@ -5,5 +5,6 @@ import ProgramasPage from "./Programas/ProgramasPage";
 import HomePage from "./HomePage";
 import DashboardPage from "./DashboardPage";
 import ProgramasForm from "./Programas/ProgramasForm";
+import FacultadesForm from "./Facultades/FacultadesForm";
 
-export { LoginPage, SignUpPage,FacultadesPage,ProgramasPage,HomePage,DashboardPage,ProgramasForm };
+export { LoginPage, SignUpPage,FacultadesPage,ProgramasPage,HomePage,DashboardPage,ProgramasForm,FacultadesForm };
