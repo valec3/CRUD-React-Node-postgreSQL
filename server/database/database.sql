@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS facultad (
 CREATE TABLE IF NOT EXISTS users (
     usuario_id SERIAL PRIMARY KEY,
     username VARCHAR(100),
-    email VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
     password VARCHAR(100),
     rol VARCHAR(100) DEFAULT 'user'
 );
@@ -38,7 +38,14 @@ CREATE OR REPLACE VIEW vw_usuario_login AS
 SELECT usuario_id, email, password FROM users;
 
 
+-- CREAR VISTA PARA REPORTE DE PROGRAMAS Y FACULTADES
 
+CREATE OR REPLACE VIEW vw_programas_facultades AS 
+SELECT ROW_NUMBER() OVER (ORDER BY dfa.facultad_id) AS numero_registro,
+	dfa.abreviatura AS Abreviatura, dpr.nombre AS Programas
+FROM facultad AS dfa
+	INNER JOIN programa AS dpr
+	ON dfa.facultad_id = dpr.facultad_id;
 
 
 

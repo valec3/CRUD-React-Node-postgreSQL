@@ -2,7 +2,7 @@ import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { createPrograma,updatePrograma,getPrograma } from "../../services/apiService"
 import { useNavigate, useParams } from "react-router-dom"
-
+import { showNotification } from "../../utilities/NotifyAlert"
 
 const ProgramasForm = () => {
     const navigate = useNavigate()
@@ -12,10 +12,20 @@ const ProgramasForm = () => {
     const handleOnSubmit = handleSubmit(async (data) => {
         if (params.id) {
             console.log('obtener data previa:',data)
-            await updatePrograma(params.id,data)
+            const results = await updatePrograma(params.id, data);
+            if (results) {
+                showNotification('success', results)
+            } else {
+                showNotification('error', results)
+            }
+
         } else {
-            console.log('data:',data)
-            await createPrograma(data)
+            const results = await createPrograma(data)
+            if (results) {
+                showNotification('success', results.message)
+            } else {
+                showNotification('error', results.message)
+            }
         }
         navigate('/dashboard/configuración')
     })

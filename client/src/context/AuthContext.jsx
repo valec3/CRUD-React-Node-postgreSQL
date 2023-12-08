@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }) => {
     const register = async (user) => {
         try {
             const data = await registerUser(user)
-            if (data.token) {
+            if (data) {
                 setAuth(true);
                 localStorage.setItem('access-token', data.token)
                 setDataUser(data)

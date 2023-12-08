@@ -10,7 +10,7 @@ export const signup = async (req, res) => {
     try {
         // Buscar el usuario en la base de datos
         const user = await pool.query(
-            "SELECT * FROM users WHERE email = $1",
+            "SELECT * FROM vw_usuario_login WHERE email = $1",
             [email]
         );
         if (user.rows.length > 0)
@@ -37,6 +37,7 @@ export const signup = async (req, res) => {
             id: newUser.rows[0]._id,
             username: newUser.rows[0].username,
             email: newUser.rows[0].email,
+            token: accessToken,
         });
     }
     catch (error) {

@@ -10,10 +10,10 @@ const ProgramasPage = () => {
     const navigate = useNavigate()
 
     const handleDelete = async (id) => {
-        deletePrograma(id);
+        const results = await deletePrograma(id);
         const newProgramas = programas.filter((programa) => programa.programa_id !== id)
         setProgramas(newProgramas)
-        showNotification("eliminada")
+        showNotification('success', results)
     }
     useEffect(() => {
         async function fetchProgramas() {
@@ -34,7 +34,7 @@ const ProgramasPage = () => {
                 <h4>Cod programa</h4>
                 <h4>Tipo</h4>
             </div>
-            <div className="overflow-auto h-[570px] scroll">
+            <div className="overflow-auto h-[570px] scroll flex flex-col">
                 {
                     programas.length === 0 && <h3 className="text-2xl text-center mt-5">No hay programas...</h3>
                 }

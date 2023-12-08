@@ -1,0 +1,223 @@
+\documentclass[12pt]{article}
+	
+\usepackage[margin=1in]{geometry}		% For setting margins
+\usepackage{amsmath}				% For Math
+\usepackage{fancyhdr}				% For fancy header/footer
+\usepackage{graphicx}				% For including figure/image
+\usepackage{cancel}				% To use the slash to cancel out stuff in work
+\usepackage[spanish]{babel}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage[utf8]{inputenc}
+
+%%%%%%%%%%%%%%%%%%%%%%
+% Set up fancy header/footer
+\pagestyle{fancy}
+\fancyhead[LO,L]{Base de Datos}
+\fancyhead[CO,C]{SIA 301 - Views in SQL}
+% fecha
+\fancyhead[RO,R]{\today}
+\fancyfoot[LO,L]{}
+\fancyfoot[CO,C]{\thepage}
+\fancyfoot[RO,R]{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+% secciones con 0.1
+%\renewcommand{\thesection}{0.\arabic{section}}
+%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+% PLANTILLA INICIAL
+\noindent \textbf{Universidad Nacional del Altiplano\\
+Docente: } Fred Torres Cruz\\
+\textbf{Estudiante:} Maye Mamani Victor Raul
+
+\vspace{2mm}
+\noindent\textbf{Trabajo Encargado N°8}\\
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%% CONTENIDO DE LA TAREA
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Login y registro de usuarios}
+\subsection{Modelo de datos}
+\large{Modelo de datos para el usuario}
+\large{Tabla de usuarios}
+\begin{verbatim}
+CREATE TABLE IF NOT EXISTS users (
+    usuario_id SERIAL PRIMARY KEY,
+    username VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
+    password VARCHAR(100),
+    rol VARCHAR(100) DEFAULT 'user'
+);
+\end{verbatim}
+
+\large{Vista para el login}
+\begin{verbatim}
+CREATE OR REPLACE VIEW vw_usuario_login AS
+SELECT usuario_id, email, password FROM users;
+\end{verbatim}
+
+
+\subsection{Registro}
+\large{Interfaz de registro}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/registro-ui.jpg}
+\end{figure}
+\large{Uso de vistas para el registro}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/registro-view.jpg}
+\end{figure}
+Se consulta la vista 'vw usuario login' para el registro de usuarios, y asi verificar si el usuario ya existe usando solo informacion de la vista y no de la tabla de usuarios.\\
+Una vez verificado esto se procede a insertar el usuario en la tabla de usuarios.
+
+\subsection{Login}
+\large{Interfaz de login}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/login-ui.jpg}
+\end{figure}
+\large{Uso de vistas para el login}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/login-view.jpg}
+\end{figure}
+Se consulta la vista 'vw usuario login' para el login, para evitar que se pueda acceder a la tabla de usuarios y asi tener mayor seguridad.
+
+\section{CRUD de Facultades y Programas}
+\subsection{Modelo de datos}
+\large{Modelo de datos para las facultades y programas}
+\begin{verbatim}
+--  tabla programa
+CREATE TABLE programa (
+    programa_id SERIAL PRIMARY KEY,
+    facultad_id INTEGER,
+    nombre VARCHAR(100),
+    cod_programa VARCHAR(100),
+    tipo VARCHAR(10)
+);
+
+-- tabla facultad
+CREATE TABLE IF NOT EXISTS facultad (
+    facultad_id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100),
+    abreviatura VARCHAR(20),
+    id_area INTEGER
+);
+\end{verbatim}
+
+\subsection{Interfaz y funcionalidad}
+
+\large{Tabla de facultades}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/facs.jpg}
+\end{figure}
+\large{Tabla de programas}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/progs.jpg}
+    \label{fig:my_label}
+\end{figure}
+
+\large{Crear para los programas}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/progs-form.jpg}
+    \label{fig:my_label}
+\end{figure}
+\large{Borrar para los programas}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/progs-delete.jpg}
+    \label{fig:my_label}
+\end{figure}
+\large{Actualizar para los programas}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/progs-update.jpg}
+    \label{fig:my_label}
+\end{figure}
+
+\large{Funciona de igual forma para las facultades}
+
+\section{View report}
+\large {Vista para el reporte}
+\begin{verbatim}
+CREATE OR REPLACE VIEW vw_programas_facultades AS 
+SELECT ROW_NUMBER() OVER (ORDER BY dfa.facultad_id) AS numero_registro,
+    dfa.abreviatura AS Abreviatura, dpr.nombre AS Programas
+FROM facultad AS dfa
+    INNER JOIN programa AS dpr
+    ON dfa.facultad_id = dpr.facultad_id;
+\end{verbatim}
+
+\large{Reporte}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/report.jpg}
+    label{fig:my_label}
+\end{figure}
+% poner espacio
+\section{Link al repositorio:} 
+\url{https://github.com/valec3/CRUD-React-Node-postgreSQL}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%% FIN TAREA
+\section{extra}
+
+\large{Solo usuarios logeados pueden acceder a la Interfaz de facultades y programas(dashboard)}
+\large{Tambien se añadio JWT para la autenticacion de usuarios}
+\large{La base de datos esta en un servidor de Vercel}
+
+\end{document}
+
+
+% PLANTILLA PARA IMAGENES
+% 
+% \begin{figure}[h]
+%       \centering
+%       \includegraphics[width=1\textwidth]{show-facu-update.jpg}
+%       \caption{Facultad actualizada con exito}
+%       \label{fig:mi_imagen}
+%     \end{figure}
+
+
+% PLANTILLA CODIGO SQL 
+
+
+% codigo sql
+% \begin{verbatim}
+
+% -- Creación de la vista
+% CREATE VIEW VistaEmpleadoProyecto AS
+% SELECT Empleados.Nombre AS NombreEmpleado, Proyectos.Nombre AS NombreProyecto
+% FROM Empleados
+% JOIN Proyectos ON Empleados.IDEmpleado = Proyectos.IDEmpleado;
+
+% -- Uso de la vista
+% SELECT * FROM VistaEmpleadoProyecto;
+% \end{verbatim}
+
+% PLANTILLA TABLA
+% \begin{table}[h]
+% \centering
+% \begin{tabular}{|l|l|l|l|l|}
+% \hline
+% \textbf{ID} & \textbf{Nombre} & \textbf{Apellido} & \textbf{Edad} & \textbf{Sexo} \\ \hline
+% 1           & Juan            & Perez             & 25            & M             \\ \hline
+% 2           & Maria           & Lopez             & 30            & F             \\ \hline
+% 3           & Carlos          & Perez             & 35            & M             \\ \hline
+% \end{tabular}
+% \caption{Tabla de ejemplo}
+% \label{tabla:1}
+% \end{table}
