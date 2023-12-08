@@ -16,3 +16,23 @@ button,input {
     background: none;
     font-family: inherit;
 }
+
+.btn {
+    @apply py-2 px-4 mx-1 rounded-md bg-slate-500 text-white font-bold hover:bg-slate-600;
+}
+
+.input {
+    @apply bg-white border-white border-[2px] rounded-md p-1 placeholder:text-white placeholder:font-bold placeholder:text-lg text-black font-bold w-full col-span-2 px-4;
+}
+
+.lbl {
+    @apply text-white font-bold text-lg grid col-span-1;
+}
+
+.cell {
+    @apply grid grid-cols-2 gap-4 items-center;
+}
+
+.input-disabled {
+    @apply bg-red-200 cursor-not-allowed;
+}

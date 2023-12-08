@@ -1,119 +1,116 @@
-import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
-import crypto from "crypto";
 import { createAccessToken } from "../libs/jwt.js";
+import pool from "../db.js";
 
 export const signup = async (req, res) => {
-  // req: request (petición), description: Es lo que el usuario envía
-  // res: response (respuesta), description: Es lo que nosotros le enviamos al usuario
-  const { username, email, password } = req.body;
-  try {
-    // Buscar el usuario en la base de datos
-    const existUser = await User.findOne({ email });
-    if (existUser)
-      return res.status(400).json({ message: "The user email already exists" });
+    // req: request (petición), description: Es lo que el usuario envía
+    // res: response (respuesta), description: Es lo que nosotros le enviamos al usuario
+    const { username, email, password } = req.body;
 
-    // Encriptar la contraseña con SHA-256 (primer método)
-    const sha256 = crypto.createHash("sha256");
-    sha256.update(password);
-    const passwordHashOne = sha256.digest("hex");
+    try {
+        // Buscar el usuario en la base de datos
+        const user = await pool.query(
+            "SELECT * FROM users WHERE email = $1",
+            [email]
+        );
+        if (user.rows.length > 0)
+            return res.status(400).json({ message: "The users already exists" });
 
-    // Encriptar la contraseña con bcrypt (segundo método)
-    const passwordHashTwo = await bcrypt.hash(passwordHashOne, 10);
+        // Encriptar la contraseña con bcrypt
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(password, salt);
 
-    const newUser = new User({
-      username,
-      email,
-      password: passwordHashTwo,
-    });
+        // Crear el usuario en la base de datos
+        const newUser = await pool.query(
+            "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *",
+            [username, email, passwordHash]
+        );
 
-    // Guardar el usuario en la base de datos
-    const userSaved = await newUser.save();
+        // Crear el token
+        const accessToken = await createAccessToken({
+            id: newUser.rows[0]._id,
+            username: newUser.rows[0].username,
+        });
 
-    // Crear el token
-    const accessToken = await createAccessToken({
-      id: userSaved._id,
-      username: userSaved.username,
-    });
-
-    res.cookie("access-token", accessToken);
-    res.status(201).json({
-      id: userSaved._id,
-      username: userSaved.username,
-      email: userSaved.email,
-      createdAt: userSaved.createdAt,
-      updatedAt: userSaved.updatedAt,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Server error" });
-  }
+        res.cookie("access-token", accessToken);
+        res.status(200).json({
+            id: newUser.rows[0]._id,
+            username: newUser.rows[0].username,
+            email: newUser.rows[0].email,
+            createdAt: newUser.rows[0].createdAt,
+            updatedAt: newUser.rows[0].updatedAt,
+        });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Server error" });
+    }
 };
 
 export const signin = async (req, res) => {
-  const { email, password } = req.body;
+    const { email, password } = req.body;
 
-  try {
-    // Buscar el usuario en la base de datos
-    const user = await User.findOne({ email });
-    if (!user)
-      return res.status(400).json({ message: "The user does not exists" });
+    try {
+        // Buscar el usuario en la base de datos
+        const user = await pool.query(
+            "SELECT * FROM vw_usuario_login WHERE email = $1",
+            [email]
+        );
+        if (user.rows.length === 0)
+            return res.status(400).json({ message: "The user does not exists" });
 
-    // Encriptar la contraseña con SHA-256 (primer método)
-    // para luego usar bcrypt (segundo método) para comparar las contraseñas
-    const sha256 = crypto.createHash("sha256");
-    sha256.update(password);
-    const passwordHashOne = sha256.digest("hex");
+        // Validar la contraseña
+        const validPassword = await bcrypt.compare(
+            password,
+            user.rows[0].password
+        );
+        if (!validPassword)
+            return res.status(400).json({ message: "Invalid password" });
 
-    // Validar la contraseña usando bcrypt (segundo método)
-    const validPassword = await bcrypt.compare(passwordHashOne, user.password);
-    if (!validPassword)
-      return res.status(401).json({ message: "Incorrect password" });
+        // Crear el token
+        const accessToken = await createAccessToken({
+            id: user.rows[0].id,
+            username: user.rows[0].username,
+        });
 
-    // Crear el token
-    const accessToken = await createAccessToken({
-      id: user._id,
-      username: user.username,
-    });
+        res.cookie("access-token", accessToken);
+        res.status(200).json({
+            id: user.rows[0].usuario_id,
+            email: user.rows[0].email,
+            token: accessToken,
+        });
 
-    res.cookie("access-token", accessToken);
-    res.status(200).json({
-      id: user._id,
-      username: user.username,
-      email: user.email,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Server error" });
-  }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Server error" });
+    }
 };
 
 export const signout = async (req, res) => {
-  try {
-    res.clearCookie("access-token");
-    res.status(200).json({ message: "Sign out successfully" });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Server error" });
-  }
+    try {
+        res.clearCookie("access-token");
+        res.status(200).json({ message: "Sign out successfully" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Server error" });
+    }
 };
 
 export const profile = async (req, res) => {
-  try {
-    const user = await User.findById(req.userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    res.status(200).json({
-      id: user._id,
-      username: user.username,
-      email: user.email,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Server error" });
-  }
+    try {
+        const user = await pool.query(
+            "SELECT * FROM users WHERE _id = $1",
+            [req.userId]
+        );
+        res.status(200).json({
+            id: user.rows[0]._id,
+            username: user.rows[0].username,
+            email: user.rows[0].email,
+            createdAt: user.rows[0].createdAt,
+            updatedAt: user.rows[0].updatedAt,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Server error" });
+    }
 };

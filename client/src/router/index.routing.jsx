@@ -27,7 +27,7 @@ export const router = createBrowserRouter([
                 element: <ProgramasPage />,
             },
             {
-                path: 'programas/:id',
+                path: 'programa/:id',
                 element: <ProgramasForm />,
             },
             {

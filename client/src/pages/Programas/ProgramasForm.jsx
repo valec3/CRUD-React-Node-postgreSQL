@@ -8,11 +8,13 @@ const ProgramasForm = () => {
     const navigate = useNavigate()
     const params = useParams()
     const {register,handleSubmit,formState:{errors},setValue}= useForm()
-
+    console.log('params:',params.id)
     const handleOnSubmit = handleSubmit(async (data) => {
-        if(params.id){
+        if (params.id) {
+            console.log('obtener data previa:',data)
             await updatePrograma(params.id,data)
-        }else{
+        } else {
+            console.log('data:',data)
             await createPrograma(data)
         }
         navigate('/dashboard/configuración')
@@ -21,17 +23,17 @@ const ProgramasForm = () => {
     useEffect(() => {
         async function getProgramaById() {
             if(params.id){
-                const response = await getPrograma(params.id)
-                setValue('programa_id',response.data.programa_id)
-                setValue('facultad_id',response.data.facultad_id)
-                setValue('nombre',response.data.nombre)
-                setValue('cod_programa',response.data.cod_programa)
-                setValue('tipo',response.data.tipo)
+                const  data= await getPrograma(params.id)
+                setValue('programa_id',data[0].programa_id)
+                setValue('facultad_id',data[0].facultad_id)
+                setValue('nombre',data[0].nombre)
+                setValue('cod_programa',data[0].cod_programa)
+                setValue('tipo',data[0].tipo)
+                console.log(data)
             }
         }
         getProgramaById();
-    }, [ params.id,setValue])
-    console.log("programas form")
+    }, [params.id, setValue])
     return (
         <section>
             <div className="flex flex-col bg-slate-400 p-5 px-10 border rounded-xl m-10">

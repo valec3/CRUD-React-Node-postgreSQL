@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 const ProgramaCard = ({programa,handleDelete}) => {
     const navigate = useNavigate()
     const updateBtn = ()=>{
-        navigate(`/programa/${programa.programa_id}`)
+        navigate(`/dashboard/programa/${programa.programa_id}`)
         console.log("update");
     }
     const deleteBtn = ()=>{
