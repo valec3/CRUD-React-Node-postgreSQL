@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiService = axios.create({
-    baseURL: "http://localhost:3000/api/",
+    baseURL: "https://api-rest-3o1k.onrender.com/api/",
 });
 
 export const authUser = async (dates) => {
